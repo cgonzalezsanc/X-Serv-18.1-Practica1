@@ -5,10 +5,11 @@ import webapp
 import string
 import urllib
 
+
 class Acortador(webapp.webApp):
 
     def parse(self, request):
-    
+
         try:
             metodo = request.split()[0]
             recurso = request.split()[1]
@@ -47,7 +48,7 @@ class Acortador(webapp.webApp):
         elif metodo == "POST" and recurso == "/":
             if len(dicc_largo) == 0:
                 self.contador = 0
-                        
+
             if len(cuerpo.split("="))!=2 or cuerpo.split("=")[0]!="url":
                 return ("400 Bad Request", "<html><body>Error en el " +
                                            "formulario</html></body>")
@@ -56,21 +57,21 @@ class Acortador(webapp.webApp):
             url = urllib.unquote(url).decode('utf8') 
             if url.split("://")[0] != "http" and url.split("://")[0] != "https":
                 url = "http://" + url
-            
+
             try:
                 url_corta = dicc_largo[url]
             except KeyError:
                 url_corta = "http://localhost:1234/" + str(self.contador)
                 dicc_largo[url] = url_corta
                 dicc_corto[url_corta] = url
-            
+
             htmlResp = "<html><body><p><a href='" + url+ "'>URL</a></p>" + \
                        "<p><a href='" + url_corta + "'>URL Acortada</a></p>" + \
                        "</html></body>"
             httpCode = "200 OK"
-            
+
             self.contador = self.contador + 1
-            
+
         elif metodo == "GET":
             url_corta = "http://localhost:1234" + recurso
             try:
@@ -81,11 +82,11 @@ class Acortador(webapp.webApp):
             htmlResp = '<html><body><head>Redirigiendo... <meta ' + \
                        'http-equiv="refresh" content="1; url=' + url + '" />'
             httpCode = "301 Moved Permanently"
-            
+
         else:
             httpCode = "404 Not Found"
             htmlResp = "<html><body>Método erróneo</body></html>"
-            
+
         return (httpCode, htmlResp)
 
 if __name__ == "__main__":
