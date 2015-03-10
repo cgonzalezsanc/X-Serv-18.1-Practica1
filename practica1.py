@@ -3,6 +3,7 @@
 
 import webapp
 import string
+import urllib
 
 class Acortador(webapp.webApp):
 
@@ -35,7 +36,9 @@ class Acortador(webapp.webApp):
                           '<input type="submit" value="Acortar"></p></form>'
             lista = "<p>Lista de URLs acortadas:</p>"
             for url in dicc_largo:
-                lista = lista + "<p>" + url + "--->" + dicc_largo[url] + "</p>"
+                lista = lista + "<p>" + "<a href='" + url+ "'>" + url + \
+                        "</a> ---> " + "<a href='" + dicc_largo[url] + "'>" + \
+                        dicc_largo[url] + "</a></p>"
                 
             htmlResp = "<html><body>" + entrada + formulario + lista + \
                        "</html></body>"
@@ -50,7 +53,8 @@ class Acortador(webapp.webApp):
                                            "formulario</html></body>")
             
             url = cuerpo.split("=")[1]
-            if url.split("://")[0] != "http" or url.split("://")[0] != "https":
+            url = urllib.unquote(url).decode('utf8') 
+            if url.split("://")[0] != "http" and url.split("://")[0] != "https":
                 url = "http://" + url
             
             try:
@@ -71,7 +75,6 @@ class Acortador(webapp.webApp):
             url_corta = "http://localhost:1234" + recurso
             try:
                 url = dicc_corto[url_corta]
-                print url
             except KeyError:
                 return("404 Not Found", "<html><body><p>Recurso no disponible" +
                                         "</p></html></body>")
