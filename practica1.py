@@ -31,16 +31,16 @@ class Acortador(webapp.webApp):
 
         if metodo == "GET" and recurso == "/":
             entrada = "<p><b> Servidor acortador de URLs</b></p>"
-            formulario =  '<FORM action="http://localhost:1234"' + \
-                          ' method="POST" accept-charset="UTF-8">' + \
-                          'URL: <input type="text" name="url">' + \
-                          '<input type="submit" value="Acortar"></p></form>'
+            formulario = '<FORM action="http://localhost:1234"' + \
+                         ' method="POST" accept-charset="UTF-8">' + \
+                         'URL: <input type="text" name="url">' + \
+                         '<input type="submit" value="Acortar"></p></form>'
             lista = "<p>Lista de URLs acortadas:</p>"
             for url in dicc_largo:
-                lista = lista + "<p>" + "<a href='" + url+ "'>" + url + \
+                lista = lista + "<p>" + "<a href='" + url + "'>" + url + \
                         "</a> ---> " + "<a href='" + dicc_largo[url] + "'>" + \
                         dicc_largo[url] + "</a></p>"
-                
+
             htmlResp = "<html><body>" + entrada + formulario + lista + \
                        "</html></body>"
             httpCode = "200 OK"
@@ -49,13 +49,14 @@ class Acortador(webapp.webApp):
             if len(dicc_largo) == 0:
                 self.contador = 0
 
-            if len(cuerpo.split("="))!=2 or cuerpo.split("=")[0]!="url":
+            if len(cuerpo.split("=")) != 2 or cuerpo.split("=")[0] != "url":
                 return ("400 Bad Request", "<html><body>Error en el " +
                                            "formulario</html></body>")
-            
+
             url = cuerpo.split("=")[1]
-            url = urllib.unquote(url).decode('utf8') 
-            if url.split("://")[0] != "http" and url.split("://")[0] != "https":
+            url = urllib.unquote(url).decode('utf8')
+            if url.split("://")[0] != "http" and \
+                url.split("://")[0] != "https":
                 url = "http://" + url
 
             try:
@@ -65,9 +66,9 @@ class Acortador(webapp.webApp):
                 dicc_largo[url] = url_corta
                 dicc_corto[url_corta] = url
 
-            htmlResp = "<html><body><p><a href='" + url+ "'>URL</a></p>" + \
-                       "<p><a href='" + url_corta + "'>URL Acortada</a></p>" + \
-                       "</html></body>"
+            htmlResp = "<html><body><p><a href='" + url + "'>URL</a></p>" + \
+                       "<p><a href='" + url_corta + "'>URL Acortada</a>" + \
+                       "</p></html></body>"
             httpCode = "200 OK"
 
             self.contador = self.contador + 1
@@ -77,8 +78,8 @@ class Acortador(webapp.webApp):
             try:
                 url = dicc_corto[url_corta]
             except KeyError:
-                return("404 Not Found", "<html><body><p>Recurso no disponible" +
-                                        "</p></html></body>")
+                return("404 Not Found", "<html><body><p>Recurso no " +
+                                        "disponible</p></html></body>")
             htmlResp = '<html><body><head>Redirigiendo... <meta ' + \
                        'http-equiv="refresh" content="1; url=' + url + '" />'
             httpCode = "301 Moved Permanently"
@@ -90,6 +91,6 @@ class Acortador(webapp.webApp):
         return (httpCode, htmlResp)
 
 if __name__ == "__main__":
-    dicc_largo = {} #clave URL real
-    dicc_corto = {} #clave URL acortada
+    dicc_largo = {}  # clave URL real
+    dicc_corto = {}  # clave URL acortada
     AppAcortadora = Acortador("localhost", 1234)
